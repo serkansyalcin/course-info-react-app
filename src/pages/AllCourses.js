@@ -46,10 +46,10 @@ const style = {
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: "image", label: "", alignRight: false },
   { id: "title", label: "Title", alignRight: false },
-  { id: "description", label: "Description", alignRight: false },
-  { id: "categories", label: "Categories", alignRight: false },
+  { id: "date", label: "Date", alignRight: false },
+  { id: "status", label: "Status", alignRight: false },
+  { id: "link", label: "Link", alignRight: false },
   // { id: "is_enrolled", label: "Erollment", alignRight: false },
 ];
 
@@ -89,7 +89,7 @@ function applySortFilter(array, comparator, query) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-export default function MyCourse() {
+export default function AllCourses() {
   const navigate = useNavigate();
 
   const [page, setPage] = useState(0);
@@ -107,7 +107,7 @@ export default function MyCourse() {
   const [userList, setUserList] = useState([]);
 
   const getUsers = async () => {
-    const data = await api("GET", "/wp-json/ldlms/v2/my_courses", {});
+    const data = await api("GET", "/wp-json/ldlms/v2/sfwd-courses", {});
     setUserList(data);
   };
   useEffect(() => {
@@ -154,7 +154,7 @@ export default function MyCourse() {
   useEffect(() => {}, [filteredUsers]);
 
   return (
-    <Page title="My Courses">
+    <Page title="All Courses">
       <Container className="pt-3">
         <Stack
           direction="row"
@@ -163,7 +163,7 @@ export default function MyCourse() {
           mb={5}
         >
           <Typography variant="h2" align="center">
-            My Courses
+            All Courses
           </Typography>
         </Stack>
 
@@ -189,15 +189,7 @@ export default function MyCourse() {
                   {filteredUsers
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
-                      const {
-                        id,
-                        title,
-                        description,
-                        link,
-                        card_image,
-                        price,
-                        categories,
-                      } = row;
+                      const { id, title, link, date, status } = row;
                       const isItemSelected = selected.indexOf(title) !== -1;
 
                       return (
@@ -219,13 +211,6 @@ export default function MyCourse() {
                             handleModalOpen(user[0]);
                           }}
                         >
-                          <TableCell component="th" scope="row">
-                            <img
-                              src={card_image}
-                              referrerpolicy="no-referrer"
-                              alt={title}
-                            />
-                          </TableCell>
                           <TableCell
                             component="th"
                             scope="row"
@@ -239,15 +224,14 @@ export default function MyCourse() {
                             >
                               {/* <Avatar alt={title} src={card_image} /> */}
                               <Typography variant="subtitle2" noWrap>
-                                {title}
+                                {title.rendered}
                               </Typography>
                             </Stack>
                           </TableCell>
 
-                          <TableCell align="left">{description}</TableCell>
-                          <TableCell align="left">
-                            {categories[0]?.name || "Other"}
-                          </TableCell>
+                          <TableCell align="left">{date}</TableCell>
+                          <TableCell align="left">{status}</TableCell>
+                          <TableCell align="left">{link}</TableCell>
                         </TableRow>
                       );
                     })}
@@ -266,25 +250,17 @@ export default function MyCourse() {
                     aria-describedby="modal-modal-description"
                   >
                     <Box sx={style}>
-                      {course && (
-                        <div>
-                          <img
-                            src={course?.card_image}
-                            referrerpolicy="no-referrer"
-                            alt={course?.title}
-                          />
-                        </div>
-                      )}
                       <Typography
                         id="modal-modal-title"
                         variant="h4"
                         component="h2"
                         mt={2}
                       >
-                        {course.title}
+                        {course.title.rendered}
                       </Typography>
                       <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        {course.description}
+                        <b>Date: </b>
+                        {course.date}
                       </Typography>
 
                       <Typography
@@ -295,21 +271,22 @@ export default function MyCourse() {
                         }}
                       >
                         <p>
-                          <b> Category: </b>{" "}
-                          {course.categories[0]?.name || "Other"}
+                          <b>Course Status: </b>
+                          {course.status}
                         </p>
-                        {course.is_enrolled && (
-                          <p
-                            style={{
-                              padding: "5px 10px",
-                              backgroundColor: "#94db66",
-                              borderRadius: "20px",
-                              color: "#eee",
-                            }}
-                          >
-                            Course Enrolled
-                          </p>
-                        )}
+                      </Typography>
+
+                      <Typography
+                        sx={{
+                          mt: 2,
+                          justifyContent: "space-between",
+                          display: "flex",
+                        }}
+                      >
+                        <p>
+                          <b> Link: </b>
+                          <a href={course.link}> {course.link} </a>
+                        </p>
                       </Typography>
                     </Box>
                   </Modal>

@@ -8,12 +8,12 @@ const getIcon = (name) => <Iconify icon={name} width={22} height={22} />;
 const navConfig = [
   {
     title: "My Courses",
-    path: "/dashboard/user",
+    path: "/dashboard/my-course",
     icon: getIcon("eva:people-fill"),
   },
   {
     title: "All Courses",
-    path: "/register",
+    path: "/dashboard/all-course",
     icon: getIcon("eva:person-add-fill"),
   },
 ];
